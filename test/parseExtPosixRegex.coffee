@@ -14,8 +14,8 @@ describe 'Regex parser', ->
       results[i].type.should.eql 'literal'
       results[i].value.should.eql testString[i]
 
-  it 'should handle question mark, dot and star', ->
-    testString = 'a?b.c*d'
+  it 'should handle question mark, plus and star', ->
+    testString = 'a?b+c*d'
     expectedTypes = [
       'repeated literal'
       'repeated literal'
@@ -40,3 +40,54 @@ describe 'Regex parser', ->
 
       error.should.eql {message: "#{char} must follow a character literal."}
 
+  it 'should specify 0 to one repetition when ? is used', ->
+    testString = 'a?'
+
+    [error, results] = parseRegex testString
+    should.not.exist error
+
+    results.length.should.eql 1
+    results[0].type.should.eql 'repeated literal'
+    results[0].value.should.eql 'a'
+    results[0].repetitionMin.should.eql 0
+    results[0].repetitionMax.should.eql 1
+
+  it 'should specify 0 to Infinity repetitions when * is used', ->
+    testString = 'a*'
+
+    [error, results] = parseRegex testString
+    should.not.exist error
+
+    results.length.should.eql 1
+    results[0].type.should.eql 'repeated literal'
+    results[0].value.should.eql 'a'
+    results[0].repetitionMin.should.eql 0
+    results[0].repetitionMax.should.eql Infinity
+
+  it 'should specify 0 to Infinity repetitions when + is used', ->
+    testString = 'a+'
+
+    [error, results] = parseRegex testString
+    should.not.exist error
+
+    results.length.should.eql 1
+    results[0].type.should.eql 'repeated literal'
+    results[0].value.should.eql 'a'
+    results[0].repetitionMin.should.eql 1
+    results[0].repetitionMax.should.eql Infinity
+
+###
+  it 'should specify a range when {} is used', ->
+    testString = 'a{1,2}'
+
+    [error, results] = parseRegex testString
+    should.not.exist error
+
+    results.length.should.eql 1
+    results[0].type.should.eql 'repeated literal'
+    results[0].value.should.eql 'a'
+    results[0].repetitionMin.should.eql 1
+    results[0].repetitionMax.should.eql 2
+
+###
+  #it 'should throw an error when { is used without }', ->
