@@ -73,7 +73,14 @@ parseCurlyBraceContents = (contents) ->
   results = /^(\d*),?(\d*)}/.exec contents.join('')
   return ["invalid curly brace syntax", 0, 0, 0] unless results?
   [totalMatch, min, max] = results
-  [null, parseInt(min), parseInt(max), totalMatch.length]
+  if _.contains totalMatch, ','
+    min = if min is '' then 0 else parseInt min
+    max = if max is '' then Infinity else parseInt max
+  else
+    min = parseInt(min)
+    max = min
+
+  [null, min, max, totalMatch.length]
 
 encodeLiteral = (character) ->
   {

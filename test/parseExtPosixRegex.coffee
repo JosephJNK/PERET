@@ -94,3 +94,41 @@ describe 'Regex parser', ->
     should.not.exist results
 
     error.message.should.eql 'invalid curly brace syntax'
+
+  it 'should handle using {} with only minimum argument', ->
+    testString = 'a{1,}'
+
+    [error, results] = parseRegex testString
+    should.not.exist error
+
+    results.length.should.eql 1
+    results[0].type.should.eql 'repeated literal'
+    results[0].value.should.eql 'a'
+    results[0].repetitionMin.should.eql 1
+    results[0].repetitionMax.should.eql Infinity
+
+  it 'should handle using {} with only minimum argument', ->
+    testString = 'a{,2}'
+
+    [error, results] = parseRegex testString
+    should.not.exist error
+
+    results.length.should.eql 1
+    results[0].type.should.eql 'repeated literal'
+    results[0].value.should.eql 'a'
+    results[0].repetitionMin.should.eql 0
+    results[0].repetitionMax.should.eql 2
+
+  it 'should handle {} with exact count', ->
+    testString = 'a{2}'
+
+    [error, results] = parseRegex testString
+    should.not.exist error
+
+    results.length.should.eql 1
+    results[0].type.should.eql 'repeated literal'
+    results[0].value.should.eql 'a'
+    results[0].repetitionMin.should.eql 2
+    results[0].repetitionMax.should.eql 2
+
+
