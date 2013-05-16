@@ -76,9 +76,8 @@ describe 'Regex parser', ->
     results[0].repetitionMin.should.eql 1
     results[0].repetitionMax.should.eql Infinity
 
-###
   it 'should specify a range when {} is used', ->
-    testString = 'a{1,2}'
+    testString = 'a{1,200}'
 
     [error, results] = parseRegex testString
     should.not.exist error
@@ -87,7 +86,11 @@ describe 'Regex parser', ->
     results[0].type.should.eql 'repeated literal'
     results[0].value.should.eql 'a'
     results[0].repetitionMin.should.eql 1
-    results[0].repetitionMax.should.eql 2
+    results[0].repetitionMax.should.eql 200
 
-###
-  #it 'should throw an error when { is used without }', ->
+  it 'should throw an error when { is used without }', ->
+    testString = 'a{1,200'
+    [error, results] = parseRegex testString
+    should.not.exist results
+
+    error.message.should.eql 'invalid curly brace syntax'

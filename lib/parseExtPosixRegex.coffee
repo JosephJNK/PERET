@@ -1,6 +1,6 @@
 _ = require 'underscore'
 
-repetitionCharacters = '?*+'.split ''
+repetitionCharacters = '?*+{'.split ''
 
 module.exports = (inputString) ->
   results = []
@@ -40,6 +40,7 @@ parseLiteral = (string) ->
   [error, parsedElement, consumed]
 
 parseRepetition = ([character, repetition, rest...]) ->
+  error = null
   if repetition is '?'
     min = 0
     max = 1
@@ -52,6 +53,10 @@ parseRepetition = ([character, repetition, rest...]) ->
     min = 0
     max = Infinity
     consumed = 2
+  else if repetition is '{'
+    [error, min, max, consumed] = parseCurlyBraceContents rest
+    consumed += 2 #include the character and opening brace
+    return [error, null, 0] if error
   else
     throw 'TILT: invalid repetition character'
 
@@ -63,6 +68,12 @@ parseRepetition = ([character, repetition, rest...]) ->
   }
 
   [null, parsed, consumed]
+
+parseCurlyBraceContents = (contents) ->
+  results = /^(\d*),?(\d*)}/.exec contents.join('')
+  return ["invalid curly brace syntax", 0, 0, 0] unless results?
+  [totalMatch, min, max] = results
+  [null, parseInt(min), parseInt(max), totalMatch.length]
 
 encodeLiteral = (character) ->
   {
