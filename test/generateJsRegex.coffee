@@ -57,5 +57,35 @@ describe 'Generate JS Regex', ->
 
     output.should.eql 'a?b+'
 
+  it 'should generate curly braces for arbitrary repetition', ->
+    input = [
+      {
+        value: 'a'
+        type: 'repeated literal'
+        repetitionMin: 1
+        repetitionMax: 30
+      }
+      {
+        value: 'b'
+        type: 'repeated literal'
+        repetitionMin: 0
+        repetitionMax: 3
+      }
+      {
+        value: 'c'
+        type: 'repeated literal'
+        repetitionMin: 100
+        repetitionMax: Infinity
+      }
+      {
+        value: 'd'
+        type: 'repeated literal'
+        repetitionMin: 5
+        repetitionMax: 5
+      }
+    ]
 
+    output = generateJsRegex input
+
+    output.should.eql 'a{1,30}b{0,3}c{100,}d{5}'
 
