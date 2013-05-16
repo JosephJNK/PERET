@@ -4,31 +4,68 @@ repetitionCharacters = '?*+'.split ''
 
 module.exports = (inputString) ->
   results = []
-  for character, i in inputString
-    if _.contains repetitionCharacters, character
-      error = applyRepetitionCharacter results, character
-      return [{message: error}, null] if error
-    else
-      results.push {type: 'literal', value: character}
+  charactersConsumed = 0
+
+  while charactersConsumed < inputString.length
+    [error, parsedElement, stepConsumed] = parseCharacter inputString.slice charactersConsumed
+    return [{message: error}, null] if error
+    results.push parsedElement
+    charactersConsumed += stepConsumed
 
   [null, results]
 
-applyRepetitionCharacter = (results, character) ->
-  if results.length == 0 or _.last(results).type != 'literal'
-    return "#{character} must follow a character literal."
+parseCharacter = (string) ->
+  error = null
+  parsedElement = null
+  charactersConsumed = 0
 
-  if character is '?'
+  if _.contains repetitionCharacters, string[0]
+    error = "#{string[0]} must follow a character literal."
+  else
+    [error, parsedElement, charactersConsumed] = parseLiteral string
+
+  [error, parsedElement, charactersConsumed]
+
+parseLiteral = (string) ->
+  error = null
+  if string.length is 1
+    consumed = 1
+    parsedElement = encodeLiteral string[0]
+  else if _.contains repetitionCharacters, string[1]
+    [error, parsedElement, consumed] = parseRepetition string
+  else
+    consumed = 1
+    parsedElement = encodeLiteral string[0]
+
+  [error, parsedElement, consumed]
+
+parseRepetition = ([character, repetition, rest...]) ->
+  if repetition is '?'
     min = 0
     max = 1
-  else if character is '+'
+    consumed = 2
+  else if repetition is '+'
     min = 1
     max = Infinity
-  else if character is '*'
+    consumed = 2
+  else if repetition is '*'
     min = 0
     max = Infinity
+    consumed = 2
   else
-    throw 'TILT: invalid repeitition character'
-  _.last(results).type = 'repeated literal'
-  _.last(results).repetitionMin = min
-  _.last(results).repetitionMax = max
-  null
+    throw 'TILT: invalid repetition character'
+
+  parsed = {
+    type: 'repeated literal'
+    value: character
+    repetitionMin: min
+    repetitionMax: max
+  }
+
+  [null, parsed, consumed]
+
+encodeLiteral = (character) ->
+  {
+    type: 'literal'
+    value: character[0]
+  }
