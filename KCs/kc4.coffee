@@ -1,4 +1,4 @@
 module.exports =
   index: 4
-  solutionPattern: '[.*?+(\\\[{]'
+  solutionPattern: /[.*?+(\\\[{]/
   description: 'Metacharacters either evaluate to a single character, or modify another regular expression'
