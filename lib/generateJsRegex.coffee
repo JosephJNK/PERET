@@ -4,32 +4,29 @@ module.exports = (inputArray) ->
   for character in inputArray
     if character.type is 'literal'
       results = results + character.value
-    else if character.type is 'repeated literal'
-      results = results + generateRepeatedCharacter character
     else
       throw "Error generating regex: character '#{character.value}' has invalid type: '#{character.type}'"
 
+    results = results + generateRepetitionCharacter character.repetition if character.repetition?
+
   return results
 
-generateRepeatedCharacter = (character) ->
-  unless character.repetitionMin? and character.repetitionMax?
-    throw 'Error generating regex: repeated character lacks bounds: ' + characer
-
-  if character.repetitionMin is Infinity and character.repetitionMax is Infinity
-    rangeError(character)
-  else if character.repetitionMin is 0 and character.repetitionMax is Infinity
-    return "#{character.value}*"
-  else if character.repetitionMin is 0 and character.repetitionMax is 1
-    return "#{character.value}?"
-  else if character.repetitionMin is 1 and character.repetitionMax is Infinity
-    return "#{character.value}+"
-  else if character.repetitionMax is Infinity
-    return "#{character.value}{#{character.repetitionMin},}"
-  else if character.repetitionMin is character.repetitionMax
-    return "#{character.value}{#{character.repetitionMin}}"
+generateRepetitionCharacter = ({minimum, maximum}) ->
+  if minimum is Infinity
+    rangeError()
+  else if minimum is 0 and maximum is Infinity
+    return "*"
+  else if minimum is 0 and maximum is 1
+    return "?"
+  else if minimum is 1 and maximum is Infinity
+    return "+"
+  else if maximum is Infinity
+    return "{#{minimum},}"
+  else if minimum is maximum
+    return "{#{minimum}}"
   else
-    return "#{character.value}{#{character.repetitionMin},#{character.repetitionMax}}"
+    return "{#{minimum},#{maximum}}"
 
-rangeError = (character) ->
-    throw "Error generating regex: '#{character.value}' has invalid range '#{character.repetitionMin}' - '#{character.repetitionMax}'"
+rangeError = ->
+    throw "Error generating regex: invalid range"
 

@@ -23,9 +23,10 @@ describe 'Generate JS Regex', ->
     input = [
       {
         value: 'a'
-        type: 'repeated literal'
-        repetitionMin: 0
-        repetitionMax: Infinity
+        type: 'literal'
+        repetition:
+          minimum: 0
+          maximum: Infinity
       }
       {
         value: 'b'
@@ -41,15 +42,17 @@ describe 'Generate JS Regex', ->
     input = [
       {
         value: 'a'
-        type: 'repeated literal'
-        repetitionMin: 0
-        repetitionMax: 1
+        type: 'literal'
+        repetition:
+          minimum: 0
+          maximum: 1
       }
       {
         value: 'b'
-        type: 'repeated literal'
-        repetitionMin: 1
-        repetitionMax: Infinity
+        type: 'literal'
+        repetition:
+          minimum: 1
+          maximum: Infinity
       }
     ]
 
@@ -61,27 +64,31 @@ describe 'Generate JS Regex', ->
     input = [
       {
         value: 'a'
-        type: 'repeated literal'
-        repetitionMin: 1
-        repetitionMax: 30
+        type: 'literal'
+        repetition:
+          minimum: 1
+          maximum: 30
       }
       {
         value: 'b'
-        type: 'repeated literal'
-        repetitionMin: 0
-        repetitionMax: 3
+        type: 'literal'
+        repetition:
+          minimum: 0
+          maximum: 3
       }
       {
         value: 'c'
-        type: 'repeated literal'
-        repetitionMin: 100
-        repetitionMax: Infinity
+        type: 'literal'
+        repetition:
+          minimum: 100
+          maximum: Infinity
       }
       {
         value: 'd'
-        type: 'repeated literal'
-        repetitionMin: 5
-        repetitionMax: 5
+        type: 'literal'
+        repetition:
+          minimum: 5
+          maximum: 5
       }
     ]
 
