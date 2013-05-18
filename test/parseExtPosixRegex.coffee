@@ -131,4 +131,33 @@ describe 'Regex parser', ->
     results[0].repetitionMin.should.eql 2
     results[0].repetitionMax.should.eql 2
 
+  it 'should handle []', ->
+    testString = '[asdf]g'
+
+    [error, results] = parseRegex testString
+    should.not.exist error
+
+    results.length.should.eql 2
+    results[0].type.should.eql 'character class'
+    results[0].inverted.should.eql false
+    {contents} = results[0]
+    contents[0].type.should.eql 'literal'
+    contents[0].value.should.eql 'a'
+    contents[1].type.should.eql 'literal'
+    contents[1].value.should.eql 's'
+    contents[2].type.should.eql 'literal'
+    contents[2].value.should.eql 'd'
+    contents[3].type.should.eql 'literal'
+    contents[3].value.should.eql 'f'
+
+    results[1].type.should.eql 'literal'
+    results[1].value.should.eql 'g'
+
+  it 'should return an error if square brackets are not closed', ->
+    testString = '[asdf'
+
+    [error, results] = parseRegex testString
+    should.not.exist results
+
+    error.should.eql {message: "Unclosed character class"}
 
