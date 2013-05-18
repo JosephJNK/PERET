@@ -78,10 +78,11 @@ parseRepetition = ([character, repetition, rest...]) ->
     throw 'TILT: invalid repetition character'
 
   parsed = {
-    type: 'repeated literal'
+    type: 'literal'
     value: character
-    repetitionMin: min
-    repetitionMax: max
+    repetition:
+      minimum: min
+      maximum: max
   }
 
   [null, parsed, consumed]
