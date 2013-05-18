@@ -45,47 +45,42 @@ parseCharacterClass = (string) ->
 
 parseLiteral = (string) ->
   error = null
-  if string.length is 1
-    consumed = 1
-    parsedElement = encodeLiteral string[0]
-  else if _.contains repetitionCharacters, string[1]
-    [error, parsedElement, consumed] = parseRepetition string
-  else
-    consumed = 1
-    parsedElement = encodeLiteral string[0]
+  parsedElement = encodeLiteral string[0]
+  consumed = 1
+  if _.contains repetitionCharacters, string[1]
+    [error, repetition, repetitionConsumed] = parseRepetition string.slice 1
+    consumed += repetitionConsumed
+    parsedElement.repetition = repetition
 
   [error, parsedElement, consumed]
 
-parseRepetition = ([character, repetition, rest...]) ->
+parseRepetition = ([repetition, rest...]) ->
   error = null
   if repetition is '?'
     min = 0
     max = 1
-    consumed = 2
+    consumed = 1
   else if repetition is '+'
     min = 1
     max = Infinity
-    consumed = 2
+    consumed = 1
   else if repetition is '*'
     min = 0
     max = Infinity
-    consumed = 2
+    consumed = 1
   else if repetition is '{'
     [error, min, max, consumed] = parseCurlyBraceContents rest
-    consumed += 2 #include the character and opening brace
+    consumed += 1 #include the opening brace
     return [error, null, 0] if error
   else
     throw 'TILT: invalid repetition character'
 
-  parsed = {
-    type: 'literal'
-    value: character
-    repetition:
-      minimum: min
-      maximum: max
+  repetition = {
+    minimum: min
+    maximum: max
   }
 
-  [null, parsed, consumed]
+  [null, repetition, consumed]
 
 parseCurlyBraceContents = (contents) ->
   results = /^(\d*),?(\d*)}/.exec contents.join('')

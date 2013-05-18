@@ -129,3 +129,22 @@ describe 'Regex parser', ->
 
     error.should.eql {message: "Unclosed character class"}
 
+  it 'should handle a repeated character class', ->
+    testString = '[ab]*c'
+
+    [error, results] = parseRegex testString
+    should.not.exist error
+
+    results.length.should.eql 2
+    results[0].type.should.eql 'character class'
+    results[0].inverted.should.eql false
+    results[0].repetition.minimum.should.eql 0
+    results[0].repetition.maximum.should.eql Infinity
+    {contents} = results[0]
+    contents[0].type.should.eql 'literal'
+    contents[0].value.should.eql 'a'
+    contents[1].type.should.eql 'literal'
+    contents[1].value.should.eql 'b'
+
+    results[1].type.should.eql 'literal'
+    results[1].value.should.eql 'c'
