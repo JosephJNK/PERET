@@ -20,7 +20,7 @@ parseCharacter = (string) ->
   charactersConsumed = 0
 
   if _.contains repetitionCharacters, string[0]
-    error = "#{string[0]} must follow a character literal."
+    error = "#{string[0]} must follow a literal or character class."
   else if string[0] is '['
     [error, parsedElement, charactersConsumed] = parseCharacterClass string
   else
@@ -29,6 +29,7 @@ parseCharacter = (string) ->
   [error, parsedElement, charactersConsumed]
 
 parseCharacterClass = (string) ->
+  error = null
   endBraceIndex = string.indexOf ']'
   return ["Unclosed character class", null, 0] if endBraceIndex < 0
   classContents = string.slice 1, endBraceIndex
@@ -41,7 +42,13 @@ parseCharacterClass = (string) ->
   for character in classContents.split ''
     results.contents.push encodeClassCharacter character
 
-  [null, results, endBraceIndex + 1]
+  consumed = endBraceIndex + 1
+
+  if string.length > endBraceIndex and _.contains repetitionCharacters, string[endBraceIndex + 1]
+    [error, results.repetition, repetitionConsumed] = parseRepetition string.slice endBraceIndex + 1
+    consumed += repetitionConsumed
+
+  [error, results, consumed]
 
 parseLiteral = (string) ->
   error = null

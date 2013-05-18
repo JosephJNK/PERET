@@ -42,7 +42,7 @@ describe 'Regex parser', ->
       [error, results] = parseRegex char
       should.not.exist results
 
-      error.should.eql {message: "#{char} must follow a character literal."}
+      error.should.eql {message: "#{char} must follow a literal or character class."}
 
   it 'should specify a range when {} is used', ->
     testString = 'a{1,200}'
