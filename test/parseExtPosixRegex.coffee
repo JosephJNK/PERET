@@ -8,6 +8,8 @@ describe 'Regex parser', ->
     [error, results] = parseRegex testString
     should.not.exist error
 
+    results = results.concatenation
+
     results.length.should.eql 4
 
     for i in [0..3]
@@ -26,6 +28,7 @@ describe 'Regex parser', ->
 
     [error, results] = parseRegex testString
     should.not.exist error
+    results = results.concatenation
 
     results.length.should.eql 4
     for i in [0...4]
@@ -49,6 +52,7 @@ describe 'Regex parser', ->
 
     [error, results] = parseRegex testString
     should.not.exist error
+    results = results.concatenation
 
     results.length.should.eql 1
     results[0].type.should.eql 'literal'
@@ -68,6 +72,7 @@ describe 'Regex parser', ->
 
     [error, results] = parseRegex testString
     should.not.exist error
+    results = results.concatenation
 
     results.length.should.eql 1
     results[0].type.should.eql 'literal'
@@ -80,6 +85,7 @@ describe 'Regex parser', ->
 
     [error, results] = parseRegex testString
     should.not.exist error
+    results = results.concatenation
 
     results.length.should.eql 1
     results[0].type.should.eql 'literal'
@@ -92,6 +98,7 @@ describe 'Regex parser', ->
 
     [error, results] = parseRegex testString
     should.not.exist error
+    results = results.concatenation
 
     results.length.should.eql 1
     results[0].type.should.eql 'literal'
@@ -104,6 +111,7 @@ describe 'Regex parser', ->
 
     [error, results] = parseRegex testString
     should.not.exist error
+    results = results.concatenation
 
     results.length.should.eql 2
     results[0].type.should.eql 'character class'
@@ -134,6 +142,7 @@ describe 'Regex parser', ->
 
     [error, results] = parseRegex testString
     should.not.exist error
+    results = results.concatenation
 
     results.length.should.eql 2
     results[0].type.should.eql 'character class'
@@ -148,3 +157,22 @@ describe 'Regex parser', ->
 
     results[1].type.should.eql 'literal'
     results[1].value.should.eql 'c'
+
+  it 'should handle alternation', ->
+    testString = 'a|bc|d'
+
+    [error, results] = parseRegex testString
+    should.not.exist error
+
+    res = []
+    for item in results.alternation
+      res.push item.concatenation
+
+    res[0][0].type.should.eql 'literal'
+    res[0][0].value.should.eql 'a'
+    res[1][0].type.should.eql 'literal'
+    res[1][0].value.should.eql 'b'
+    res[1][1].type.should.eql 'literal'
+    res[1][1].value.should.eql 'c'
+    res[2][0].type.should.eql 'literal'
+    res[2][0].value.should.eql 'd'

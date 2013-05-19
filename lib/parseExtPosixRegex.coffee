@@ -2,17 +2,106 @@ _ = require 'underscore'
 
 repetitionCharacters = '?*+{'.split ''
 
-module.exports = (inputString) ->
-  results = []
+parse = (inputString) ->
+  if containsAlternation inputString
+    parseAlternation inputString
+  else
+    parseConcatenation inputString
+
+walkSeparators = (inputString, fn) ->
+  #executes fn on every element in inputString with a flag indicating whether we're inside separators or escape sequences
+  #returns immediately if fn returns false
+
+  #TODO: this won't quite work... needs tweaking to handle ']' directly following '[', and '\' in square brackets
+  stack = []
+
+  shouldContinue = true
+  callFn = (char, escaped) ->
+    escaped = true if stack.length > 0
+    shouldContinue = shouldContinue and fn char, 0
+
+  checkCharacter = (index) ->
+    shouldPop = false
+    push = ''
+    charsChecked = 1
+
+    if inputString[index] is '\\'
+      callFn inputString[index], false
+      callFn inputString[index + 1], true if shouldContinue
+      charsChecked = 2
+    else if inputString[index] is '('
+      callFn inputString[index], false
+      push = '('
+    else if inputString[index] is '['
+      callFn inputString[index], false
+      push = '['
+    else if inputString[index] is ')'
+      shouldPop = true if _.last(stack) is '('
+      callFn inputString[index], false
+    else if inputString[index] is ']'
+      shouldPop = true if _.last(stack) is '['
+      callFn inputString[index], false
+    else
+      callFn inputString[index], false
+
+    [charsChecked, shouldPop, push]
+
+  i = 0
+  while i < inputString.length
+    [consumed, pop, push] = checkCharacter i
+    i += consumed
+    stack.pop() if pop
+    stack.push push if push isnt ''
+    return unless shouldContinue
+
+containsAlternation = (inputString) ->
+  pipeFound = false
+  isUnescapedPipe = (char, isEscaped) ->
+    if (char is '|') and not isEscaped
+      pipeFound = true 
+      return false
+    true
+
+  walkSeparators inputString, isUnescapedPipe
+  pipeFound
+
+splitAlongAlternation = (inputString) ->
+  results = ['']
+  segmentsFound = 0
+
+  pushToResults = (char, isEscaped) ->
+    if (char is '|') and not isEscaped
+      segmentsFound++
+      results[segmentsFound] = ''
+    else
+      results[segmentsFound] = results[segmentsFound] + char
+    true
+
+  walkSeparators inputString, pushToResults
+  results
+
+parseConcatenation = (inputString) ->
+  results = concatenation: []
   charactersConsumed = 0
 
   while charactersConsumed < inputString.length
     [error, parsedElement, stepConsumed] = parseCharacter inputString.slice charactersConsumed
     return [{message: error}, null] if error
-    results.push parsedElement
+    results.concatenation.push parsedElement
     charactersConsumed += stepConsumed
 
   [null, results]
+
+parseAlternation = (inputString) ->
+  alternates = splitAlongAlternation inputString
+  results = alternation: []
+
+  for alternate in alternates
+    [error, parsedAlternate] = parse alternate
+    return [error, null] if error
+    results.alternation.push parsedAlternate
+
+  return [null, results]
 
 parseCharacter = (string) ->
   error = null
@@ -113,3 +202,5 @@ encodeClassCharacter = (character) ->
     type: 'literal'
     value: character
   }
+
+module.exports = parse
