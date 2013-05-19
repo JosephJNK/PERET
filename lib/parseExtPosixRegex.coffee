@@ -12,7 +12,8 @@ walkSeparators = (inputString, fn) ->
   #executes fn on every element in inputString with a flag indicating whether we're inside separators or escape sequences
   #returns immediately if fn returns false
 
-  #TODO: this won't quite work... needs tweaking to handle ']' directly following '[', and '\' in square brackets
+  #TODO: this won't quite work... needs tweaking to handle ']' directly following '['
+        #Hooray for function scope flags!
   stack = []
 
   shouldContinue = true
@@ -26,9 +27,12 @@ walkSeparators = (inputString, fn) ->
     charsChecked = 1
 
     if inputString[index] is '\\'
-      callFn inputString[index], false
-      callFn inputString[index + 1], true if shouldContinue
-      charsChecked = 2
+      if stack.length > 0 and _.last(stack) is '['
+        callFn inputString[index], true
+      else
+        callFn inputString[index], false
+        callFn inputString[index + 1], true if shouldContinue
+        charsChecked = 2
     else if inputString[index] is '('
       callFn inputString[index], false
       push = '('
