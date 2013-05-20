@@ -11,12 +11,10 @@ parse = (inputString) ->
 walkSeparators = (inputString, fn) ->
   #executes fn on every element in inputString with a flag indicating whether we're inside separators or escape sequences
   #returns immediately if fn returns false
-
-  #TODO: this won't quite work... needs tweaking to handle ']' directly following '['
-        #Hooray for function scope flags!
   stack = []
 
   shouldContinue = true
+  justEnteredClass = false
   callFn = (char, escaped) ->
     escaped = true if stack.length > 0
     shouldContinue = shouldContinue and fn char, 0
@@ -43,8 +41,11 @@ walkSeparators = (inputString, fn) ->
       shouldPop = true if _.last(stack) is '('
       callFn inputString[index], false
     else if inputString[index] is ']'
-      shouldPop = true if _.last(stack) is '['
-      callFn inputString[index], false
+      if justEnteredClass is false
+        shouldPop = true if _.last(stack) is '['
+        callFn inputString[index], false
+      else
+        callFn inputString[index], true
     else
       callFn inputString[index], false
 
@@ -56,6 +57,10 @@ walkSeparators = (inputString, fn) ->
     i += consumed
     stack.pop() if pop
     stack.push push if push isnt ''
+    if push is '['
+      justEnteredClass = true
+    else
+      justEnteredClass = false
     return unless shouldContinue
 
 containsAlternation = (inputString) ->
