@@ -23,14 +23,18 @@ describe 'Check Solution', ->
   it 'should return misses if a solution does not contain all targets', ->
     actualSolution = problem1.solution
 
-    solutionAttempt = problem1.hits[1]
+    solutionAttempt = "(^#{problem1.hits[0]}$)"
 
     for hit in problem1.hits.slice 1, problem1.hits.length - 1
-      solutionAttempt = solutionAttempt + "|#{hit}"
+      solutionAttempt = solutionAttempt + "|(^#{hit}$)"
+
+    console.log 'solutionAttempt: ' + solutionAttempt
 
     results = checkSolution problem1, solutionAttempt, actualSolution
 
-    {inspect} = require 'util'
-    console.log inspect results, false, null
+    results.correct.should.eql false
+    results.falseHits.length.should.eql 0
+    results.misses.length.should.eql 1
+    results.hits.length.should.eql problem1.hits.length - 1
 
-
+    results.misses[0].should.eql problem1.hits[problem1.hits.length - 1]
