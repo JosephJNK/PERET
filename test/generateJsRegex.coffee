@@ -4,7 +4,7 @@ generateJsRegex = require '../lib/generateJsRegex.coffee'
 describe 'Generate JS Regex', ->
 
   it 'should generate string from non-grouping characters', ->
-    input = [
+    input = concatenation: [
       {
         value: 'a'
         type: 'literal'
@@ -20,7 +20,7 @@ describe 'Generate JS Regex', ->
     output.should.eql 'ab'
 
   it 'should insert a star when an element can be repeated 0-Infinity times', ->
-    input = [
+    input = concatenation: [
       {
         value: 'a'
         type: 'literal'
@@ -39,7 +39,7 @@ describe 'Generate JS Regex', ->
     output.should.eql 'a*b'
 
   it 'should generate repetition meta-characters when an element can be repeated 0-1 or 1-Infinity times', ->
-    input = [
+    input = concatenation: [
       {
         value: 'a'
         type: 'literal'
@@ -61,7 +61,7 @@ describe 'Generate JS Regex', ->
     output.should.eql 'a?b+'
 
   it 'should generate curly braces for arbitrary repetition', ->
-    input = [
+    input = concatenation: [
       {
         value: 'a'
         type: 'literal'
@@ -96,3 +96,26 @@ describe 'Generate JS Regex', ->
 
     output.should.eql 'a{1,30}b{0,3}c{100,}d{5}'
 
+  it 'should generate pipes for alternation', ->
+    input = alternation: [
+      {
+        concatenation: [ { type: 'literal', value: 'a' }, ]
+      },
+      {
+        concatenation: [
+          { type: 'literal', value: 'b' },
+          { type: 'literal', value: 'c' }
+        ]
+      },
+      {
+        concatenation: [
+          { type: 'literal', value: 'd' },
+          { type: 'literal', value: 'e' },
+          { type: 'literal', value: 'f' }
+        ]
+      }
+    ]
+
+    output = generateJsRegex input
+
+    output.should.eql 'a|bc|def'

@@ -1,6 +1,6 @@
 module.exports =
   statement: "containing the string 'ab' or 'ib'"
-  solution: 'ab|bc'
+  solution: 'ab|ib'
   hits: [
     'abba'
     'cab'

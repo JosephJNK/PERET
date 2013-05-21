@@ -1,15 +1,33 @@
+generateItem = (item) ->
+  results = ''
+  if item.type? and item.type is 'literal'
+    results = results + item.value
+    results = results + generateRepetitionCharacter item.repetition if item.repetition?
+  else if item.type? and item.type is 'character class'
+    results = results + generateCharacterClass item
+    results = results + generateRepetitionCharacter item.repetition if item.repetition?
+  else if item.concatenation?
+    results = generateConcatenation item.concatenation
+  else if item.alternation?
+    results = generateAlternation item.alternation
+  else
+    throw "Error generating regex: invalid input:" + item
+  results
 
-module.exports = (inputArray) ->
+generateConcatenation = (concatenationArray) ->
   results = ""
-  for character in inputArray
-    if character.type is 'literal'
-      results = results + character.value
-    else
-      throw "Error generating regex: character '#{character.value}' has invalid type: '#{character.type}'"
+  for item in concatenationArray
+    results = results + generateItem item
+  results
 
-    results = results + generateRepetitionCharacter character.repetition if character.repetition?
+generateAlternation = (alternationArray) ->
+  results = generateItem alternationArray[0]
+  for item in alternationArray.slice 1
+    results = results + '|' + generateItem item
+  results
 
-  return results
+generateCharacterClass = (classItem) ->
+  throw 'not implemented'
 
 generateRepetitionCharacter = ({minimum, maximum}) ->
   if minimum is Infinity
@@ -28,5 +46,6 @@ generateRepetitionCharacter = ({minimum, maximum}) ->
     return "{#{minimum},#{maximum}}"
 
 rangeError = ->
-    throw "Error generating regex: invalid range"
+  throw "Error generating regex: invalid range"
 
+module.exports = generateItem
