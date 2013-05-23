@@ -4,6 +4,7 @@ head.js(
   { bootstrap: libs+'bootstrap.js' }
   { jade: libs+'jade.js' }
   { templates: '/scripts/templates.js' }
+  { lib: '/scripts/bundle.js' }
 ).ready ->
   jQuery ->
     head.js app: '/scripts/app.js'

@@ -1,4 +1,4 @@
-var displayProblemInput, displayProblemText, displayResults, displaySteps, test;
+var displayProblemInput, displayProblemText, displayResults, displaySteps, error, expression, test, works, _ref;
 
 displayProblemText = function(text) {
   return $("#problem-display > .content").html(text);
@@ -18,6 +18,7 @@ displayResults = function(resultArray) {
 
 displaySteps = function(stepProblemStatements) {
   var $step, $steps, i, num, statement, _i, _len, _results;
+
   $steps = $("#steps > .content");
   $steps.html("");
   _results = [];
@@ -47,3 +48,17 @@ test = function() {
 };
 
 test();
+
+console.log('compiling regex...');
+
+_ref = lib.extPosixToJs('a|bc'), error = _ref[0], expression = _ref[1];
+
+console.log('expression:' + expression);
+
+works = (expression.test('asdf')) && (expression.test('bcd')) && !expression.test('foo');
+
+if (works) {
+  console.log('regex compilition works');
+} else {
+  console.log('regex compilation failed v.v');
+}

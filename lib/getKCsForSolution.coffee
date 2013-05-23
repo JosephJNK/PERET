@@ -1,4 +1,4 @@
-getAllKCs = require './getAllKCs'
+getAllKCs = require './getAllKCs.coffee'
 
 module.exports = (solution) ->
   kcs = getAllKCs()

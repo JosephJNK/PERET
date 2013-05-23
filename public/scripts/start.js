@@ -10,6 +10,8 @@ head.js({
   jade: libs + 'jade.js'
 }, {
   templates: '/scripts/templates.js'
+}, {
+  lib: '/scripts/bundle.js'
 }).ready(function() {
   return jQuery(function() {
     return head.js({

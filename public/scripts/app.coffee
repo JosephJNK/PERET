@@ -23,3 +23,14 @@ test = ->
   displayResults ['a', 'b', 'cde']
 
 test()
+
+console.log 'compiling regex...'
+[error, expression] = lib.extPosixToJs 'a|bc'
+console.log 'expression:' + expression
+
+works = (expression.test 'asdf') and (expression.test 'bcd') and not expression.test 'foo'
+
+if works
+  console.log 'regex compilition works'
+else
+  console.log 'regex compilation failed v.v'
