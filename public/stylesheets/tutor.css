@@ -1,0 +1,44 @@
+.center-block,
+#header,
+.center {
+  position: relative;
+  width: 1000px;
+  margin: 0 auto;
+}
+#header {
+  border-top: none;
+  text-align: center;
+  margin-bottom: 2em;
+}
+#header .content {
+  font-size: 3em;
+  font-weight: bolder;
+  padding: 0.25em 10%;
+}
+.center {
+  min-height: 50%;
+  height: auto;
+  height: 50%;
+}
+#problem-input,
+#problem-display,
+#steps,
+#results {
+  vertical-align: top;
+  display: inline-block;
+  width: 49%;
+  height: 50%;
+}
+#problem-input > .title,
+#problem-display > .title,
+#steps > .title,
+#results > .title {
+  width: 100%;
+  font-size: 2em;
+  line-height: 1.3em;
+  border-bottom: solid #000 1px;
+}
+#steps .input .btn {
+  vertical-align: top;
+  margin-left: 0.5px;
+}

@@ -1,11 +1,30 @@
-!!!5
-html
+doctype 5
+html(lang="en")
   head
-    title #{title} - My Site
+    meta(charset="utf-8")
     meta(name='viewport', content='width=device-width, initial-scale=1.0')
-    link(rel='stylesheed', href='/stylesheets/bootstrap.css', media='screen')
+
+    title #{title}
+    link(rel='stylesheet', href='/stylesheets/bootstrap.css', media='screen')
     link(rel='stylesheet', href='/stylesheets/tutor.css')
+
+    script(src="scripts/libs/head.js")
+    script(src="scripts/start.js")
   body
-    script(src='http://code.jquery.com/jquery.js')
-    script(src='/js/bootstrap.js')
-    | hello world
+    #header: .content PERET
+    #content.center
+      #problem-display
+        .title Problem Description
+        .content
+
+      #problem-input
+        .title Problem Input
+        .content
+
+      #steps
+        .title Steps
+        .content
+
+      #results
+        .title Results
+        .content
