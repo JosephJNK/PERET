@@ -5,7 +5,8 @@
   loaded = {
     generateJsRegex: require('./generateJsRegex.coffee'),
     parseExtPosixRegex: require('./parseExtPosixRegex.coffee'),
-    extPosixToJs: require('./extPosixToJs.coffee')
+    extPosixToJs: require('./extPosixToJs.coffee'),
+    stepifyProblem: require('./stepifyProblem.coffee')
   };
 
   if (typeof window !== "undefined" && window !== null) {
@@ -17,7 +18,7 @@
 }).call(this);
 
 
-},{"./generateJsRegex.coffee":2,"./parseExtPosixRegex.coffee":3,"./extPosixToJs.coffee":4}],2:[function(require,module,exports){
+},{"./generateJsRegex.coffee":2,"./parseExtPosixRegex.coffee":3,"./extPosixToJs.coffee":4,"./stepifyProblem.coffee":5}],2:[function(require,module,exports){
 (function() {
   var generateAlternation, generateCharacterClass, generateConcatenation, generateItem, generateRepetitionCharacter, rangeError;
 
@@ -102,7 +103,7 @@
 }).call(this);
 
 
-},{}],5:[function(require,module,exports){
+},{}],6:[function(require,module,exports){
 var events = require('events');
 
 exports.isArray = isArray;
@@ -455,7 +456,7 @@ exports.format = function(f) {
   return str;
 };
 
-},{"events":6}],4:[function(require,module,exports){
+},{"events":7}],4:[function(require,module,exports){
 (function() {
   var generate, parse;
 
@@ -480,7 +481,7 @@ exports.format = function(f) {
 }).call(this);
 
 
-},{"util":5,"./parseExtPosixRegex.coffee":3,"./generateJsRegex.coffee":2}],7:[function(require,module,exports){
+},{"util":6,"./parseExtPosixRegex.coffee":3,"./generateJsRegex.coffee":2}],8:[function(require,module,exports){
 // shim for using process in browser
 
 var process = module.exports = {};
@@ -534,7 +535,7 @@ process.chdir = function (dir) {
     throw new Error('process.chdir is not supported');
 };
 
-},{}],6:[function(require,module,exports){
+},{}],7:[function(require,module,exports){
 (function(process){if (!process.EventEmitter) process.EventEmitter = function () {};
 
 var EventEmitter = exports.EventEmitter = process.EventEmitter;
@@ -720,7 +721,7 @@ EventEmitter.prototype.listeners = function(type) {
 };
 
 })(require("__browserify_process"))
-},{"__browserify_process":7}],3:[function(require,module,exports){
+},{"__browserify_process":8}],3:[function(require,module,exports){
 (function() {
   var containsAlternation, encodeClassCharacter, encodeLiteral, parse, parseAlternation, parseCharacter, parseCharacterClass, parseConcatenation, parseCurlyBraceContents, parseLiteral, parseRepetition, repetitionCharacters, splitAlongAlternation, walkSeparators, _,
     __slice = [].slice;
@@ -1011,7 +1012,97 @@ EventEmitter.prototype.listeners = function(type) {
 }).call(this);
 
 
-},{"underscore":8}],8:[function(require,module,exports){
+},{"underscore":9}],5:[function(require,module,exports){
+(function() {
+  var combineAlternateIndices, stepListFromIndices, stepifyAlternationNode, stepifyStandaloneNode, walkNode, _,
+    __slice = [].slice;
+
+  _ = require('underscore');
+
+  walkNode = function(node, index) {
+    var combinedIndices, currentIndex, nodesConsumed, steps, subIndex, subNode, subNodes, subSteps, _i, _len, _ref, _ref1;
+
+    steps = [];
+    if (!((node.alternation != null) || (node.concatenation != null))) {
+      return [stepifyStandaloneNode(node), index, 1];
+    }
+    if (node.alternation != null) {
+      currentIndex = index;
+      combinedIndices = [];
+      subNodes = node.alternation.length;
+      _ref = node.alternation;
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        subNode = _ref[_i];
+        _ref1 = walkNode(subNode, currentIndex), subSteps = _ref1[0], subIndex = _ref1[1], nodesConsumed = _ref1[2];
+        combinedIndices.push(subIndex);
+        currentIndex += nodesConsumed;
+        steps.push(subSteps);
+      }
+      steps.push(stepifyAlternationNode(node, combinedIndices, steps));
+      return steps;
+    }
+    throw "TILT: non-standalone non-alternation node encountered while stepifying problem";
+  };
+
+  stepifyAlternationNode = function(node, combinedIndices, currentSteps) {
+    var combinationSolution, stepList;
+
+    stepList = stepListFromIndices(combinedIndices);
+    combinationSolution = combineAlternateIndices(combinedIndices, currentSteps);
+    return {
+      statement: "Combine the results of " + stepList + " using alternation",
+      solution: combinationSolution
+    };
+  };
+
+  combineAlternateIndices = function(indices, steps) {
+    var index, solutions, _i, _len;
+
+    solutions = [];
+    for (_i = 0, _len = indices.length; _i < _len; _i++) {
+      index = indices[_i];
+      solutions.push(steps[index - 1].solution);
+    }
+    return solutions.join('|');
+  };
+
+  stepListFromIndices = function(indices) {
+    var index, last, leading, string, _i, _j, _len;
+
+    if (indices.length === 2) {
+      return "step " + indices[0] + " and step " + indices[1];
+    }
+    leading = 2 <= indices.length ? __slice.call(indices, 0, _i = indices.length - 1) : (_i = 0, []), last = indices[_i++];
+    string = "";
+    for (_j = 0, _len = leading.length; _j < _len; _j++) {
+      index = leading[_j];
+      string = string + ("step " + indices[index] + ", ");
+    }
+    return string + ("and step " + indices[last]);
+  };
+
+  stepifyStandaloneNode = function(node) {
+    return {
+      statement: "Write a regex that selects lines " + node.statement,
+      solution: node.solution
+    };
+  };
+
+  module.exports = function(problem) {
+    var answer, steps;
+
+    answer = stepifyStandaloneNode(problem);
+    steps = walkNode(problem, 1);
+    return {
+      testValues: _.shuffle(problem.hits.concat(problem.misses)),
+      steps: [stepifyStandaloneNode(problem)].concat(walkNode(problem, 1))
+    };
+  };
+
+}).call(this);
+
+
+},{"underscore":9}],9:[function(require,module,exports){
 (function(){//     Underscore.js 1.4.4
 //     http://underscorejs.org
 //     (c) 2009-2013 Jeremy Ashkenas, DocumentCloud Inc.

@@ -2,7 +2,6 @@ should = require 'should'
 
 stepifyProblem = require '../lib/stepifyProblem.coffee'
 problem2 = require '../problems/problem2.coffee'
-###
 describe 'Stepify Problem', ->
   it 'should flatten problem into series of step objects', ->
 
@@ -22,4 +21,3 @@ describe 'Stepify Problem', ->
 
     stepified.steps[3].statement.should.eql "Combine the results of step 1 and step 2 using alternation"
     stepified.steps[3].solution.should.eql 'ab|ib'
-###
