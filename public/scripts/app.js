@@ -1,4 +1,4 @@
-var displayProblemInput, displayProblemText, displayResults, displaySteps, error, expression, test, works, _ref;
+var displayProblemInput, displayProblemText, displayResults, displaySteps, loadProblem;
 
 displayProblemText = function(text) {
   return $("#problem-display > .content").html(text);
@@ -40,27 +40,15 @@ displaySteps = function(stepProblemStatements) {
   return _results;
 };
 
-test = function() {
+loadProblem = function(problemIndex) {
+  var problem;
+
+  problem = lib.stepifyProblem(problems[problemIndex]);
+  console.log(problem);
   displayProblemText("A pair of character literals separated by a hyphen within square braces match the range of characters beginning with the first literal and ending with the second");
   displaySteps(['First', 'Second', 'Third']);
   displayProblemInput(["a", "aa", "cat", "bagel", "A", "b", "cot", "CAT"]);
   return displayResults(['a', 'b', 'cde']);
 };
 
-test();
-
-console.log('compiling regex...');
-
-_ref = lib.extPosixToJs('a|bc'), error = _ref[0], expression = _ref[1];
-
-console.log('expression:' + expression);
-
-works = (expression.test('asdf')) && (expression.test('bcd')) && !expression.test('foo');
-
-if (works) {
-  console.log('regex compilition works');
-} else {
-  console.log('regex compilation failed v.v');
-}
-
-console.log('first problem: ', problems[0]);
+loadProblem(0);

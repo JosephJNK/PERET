@@ -1020,7 +1020,7 @@ EventEmitter.prototype.listeners = function(type) {
   _ = require('underscore');
 
   walkNode = function(node, index) {
-    var combinedIndices, currentIndex, nodesConsumed, steps, subIndex, subNode, subNodes, subSteps, _i, _len, _ref, _ref1;
+    var combinedIndices, currentIndex, nodesConsumed, steps, subIndex, subNode, subNodes, subSteps, totalConsumed, _i, _len, _ref, _ref1;
 
     steps = [];
     if (!((node.alternation != null) || (node.concatenation != null))) {
@@ -1028,6 +1028,7 @@ EventEmitter.prototype.listeners = function(type) {
     }
     if (node.alternation != null) {
       currentIndex = index;
+      totalConsumed = 1;
       combinedIndices = [];
       subNodes = node.alternation.length;
       _ref = node.alternation;
@@ -1036,10 +1037,11 @@ EventEmitter.prototype.listeners = function(type) {
         _ref1 = walkNode(subNode, currentIndex), subSteps = _ref1[0], subIndex = _ref1[1], nodesConsumed = _ref1[2];
         combinedIndices.push(subIndex);
         currentIndex += nodesConsumed;
+        totalConsumed += nodesConsumed;
         steps.push(subSteps);
       }
       steps.push(stepifyAlternationNode(node, combinedIndices, steps));
-      return steps;
+      return [steps, currentIndex, totalConsumed];
     }
     throw "TILT: non-standalone non-alternation node encountered while stepifying problem";
   };
@@ -1089,13 +1091,16 @@ EventEmitter.prototype.listeners = function(type) {
   };
 
   module.exports = function(problem) {
-    var answer, steps;
+    var junk, results, steps, _ref;
 
-    answer = stepifyStandaloneNode(problem);
-    steps = walkNode(problem, 1);
+    results = [stepifyStandaloneNode(problem)];
+    _ref = walkNode(problem, 1), steps = _ref[0], junk = 2 <= _ref.length ? __slice.call(_ref, 1) : [];
+    if (steps.length > 1) {
+      results = results.concat(steps);
+    }
     return {
       testValues: _.shuffle(problem.hits.concat(problem.misses)),
-      steps: [stepifyStandaloneNode(problem)].concat(walkNode(problem, 1))
+      steps: results
     };
   };
 

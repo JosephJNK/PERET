@@ -1,5 +1,5 @@
 module.exports =
-  statement: "containing the letter 'a'"
+  statement: "containing the string 'a'"
   solution: 'a'
   hits: [
     'a'

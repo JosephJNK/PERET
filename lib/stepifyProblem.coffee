@@ -6,15 +6,17 @@ walkNode = (node, index) ->
 
   if node.alternation?
     currentIndex = index
+    totalConsumed = 1
     combinedIndices = []
     subNodes = node.alternation.length
     for subNode in node.alternation
       [subSteps, subIndex, nodesConsumed] = walkNode subNode, currentIndex
       combinedIndices.push subIndex
       currentIndex += nodesConsumed
+      totalConsumed += nodesConsumed
       steps.push subSteps
     steps.push stepifyAlternationNode node, combinedIndices, steps
-    return steps
+    return [steps, currentIndex, totalConsumed]
 
   throw "TILT: non-standalone non-alternation node encountered while stepifying problem"
 
@@ -48,11 +50,13 @@ stepifyStandaloneNode = (node) ->
   }
 
 module.exports = (problem) ->
-  answer = stepifyStandaloneNode problem
-  steps = walkNode problem, 1
+  results = [stepifyStandaloneNode problem]
+  [steps, junk...] = walkNode problem, 1
+
+  results = results.concat steps if steps.length > 1
 
   {
     testValues: _.shuffle problem.hits.concat problem.misses
-    steps: [stepifyStandaloneNode problem].concat walkNode problem, 1
+    steps: results
   }
 

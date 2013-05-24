@@ -16,23 +16,12 @@ displaySteps = (stepProblemStatements) ->
     $step.find(".submit-button").on 'click', {statement: statement, number:num}, (event) ->
       console.log event.data.number, "clicked"
 
-test = ->
+loadProblem = (problemIndex) ->
+  problem = lib.stepifyProblem problems[problemIndex]
+  console.log problem
   displayProblemText "A pair of character literals separated by a hyphen within square braces match the range of characters beginning with the first literal and ending with the second"
   displaySteps(['First', 'Second', 'Third'])
   displayProblemInput [ "a", "aa", "cat", "bagel", "A", "b", "cot", "CAT" ]
   displayResults ['a', 'b', 'cde']
 
-test()
-
-console.log 'compiling regex...'
-[error, expression] = lib.extPosixToJs 'a|bc'
-console.log 'expression:' + expression
-
-works = (expression.test 'asdf') and (expression.test 'bcd') and not expression.test 'foo'
-
-if works
-  console.log 'regex compilition works'
-else
-  console.log 'regex compilation failed v.v'
-
-console.log 'first problem: ', problems[0]
+loadProblem 0
