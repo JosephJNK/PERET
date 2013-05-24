@@ -16,23 +16,23 @@ displayResults = function(resultArray) {
   }));
 };
 
-displaySteps = function(stepProblemStatements) {
-  var $step, $steps, i, num, statement, _i, _len, _results;
+displaySteps = function(steps) {
+  var $step, $steps, i, num, step, title, _i, _len, _results;
 
   $steps = $("#steps > .content");
   $steps.html("");
   _results = [];
-  for (i = _i = 0, _len = stepProblemStatements.length; _i < _len; i = ++_i) {
-    statement = stepProblemStatements[i];
-    num = i + 1;
+  for (i = _i = 0, _len = steps.length; _i < _len; i = ++_i) {
+    step = steps[i];
+    num = i;
+    title = i === 0 ? 'Answer' : "Step " + i;
     $steps.append(tmpl.step({
-      statement: statement,
-      number: num
+      statement: step.statement,
+      title: title
     }));
     $step = $steps.children().last();
     _results.push($step.find(".submit-button").on('click', {
-      statement: statement,
-      number: num
+      number: i
     }, function(event) {
       return console.log(event.data.number, "clicked");
     }));
@@ -44,10 +44,9 @@ loadProblem = function(problemIndex) {
   var problem;
 
   problem = lib.stepifyProblem(problems[problemIndex]);
-  console.log(problem);
-  displayProblemText("A pair of character literals separated by a hyphen within square braces match the range of characters beginning with the first literal and ending with the second");
-  displaySteps(['First', 'Second', 'Third']);
-  displayProblemInput(["a", "aa", "cat", "bagel", "A", "b", "cot", "CAT"]);
+  displayProblemText(problem.steps[0].statement);
+  displayProblemInput(problem.testValues);
+  displaySteps(problem.steps);
   return displayResults(['a', 'b', 'cde']);
 };
 

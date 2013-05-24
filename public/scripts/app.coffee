@@ -6,22 +6,23 @@ displayProblemInput = (inputArray) ->
 displayResults = (resultArray) ->
   $("#results > .content").html tmpl.stringList tests: resultArray
 
-displaySteps = (stepProblemStatements) ->
+displaySteps = (steps) ->
   $steps = $ "#steps > .content"
   $steps.html ""
-  for statement, i in stepProblemStatements
-    num = i+1
-    $steps.append tmpl.step { statement: statement, number: num }
+  for step, i in steps
+    num = i
+    title = if i is 0 then 'Answer' else "Step #{i}"
+    $steps.append tmpl.step { statement: step.statement, title: title }
     $step = $steps.children().last()
-    $step.find(".submit-button").on 'click', {statement: statement, number:num}, (event) ->
+    $step.find(".submit-button").on 'click', { number: i }, (event) ->
       console.log event.data.number, "clicked"
 
 loadProblem = (problemIndex) ->
   problem = lib.stepifyProblem problems[problemIndex]
-  console.log problem
-  displayProblemText "A pair of character literals separated by a hyphen within square braces match the range of characters beginning with the first literal and ending with the second"
-  displaySteps(['First', 'Second', 'Third'])
-  displayProblemInput [ "a", "aa", "cat", "bagel", "A", "b", "cot", "CAT" ]
+  displayProblemText problem.steps[0].statement
+  displayProblemInput problem.testValues
+  displaySteps problem.steps
+
   displayResults ['a', 'b', 'cde']
 
 loadProblem 0

@@ -17,7 +17,7 @@ templates.add "stringList",
 templates.add "step",
   '''
   .step
-    .title Step #{number}
+    .title #{title}
     .description #{statement}
     .input
       input(type="text", placeholder="Try your best.")
