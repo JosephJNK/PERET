@@ -15,7 +15,7 @@ displayResults = function(results) {
 };
 
 displaySteps = function(problem) {
-  var $step, $steps, i, num, step, title, _i, _len, _ref, _results;
+  var $step, $steps, i, step, title, _i, _len, _ref, _results;
 
   $steps = $("#steps > .content");
   $steps.html("");
@@ -23,20 +23,21 @@ displaySteps = function(problem) {
   _results = [];
   for (i = _i = 0, _len = _ref.length; _i < _len; i = ++_i) {
     step = _ref[i];
-    num = i;
     title = i === 0 ? 'Answer' : "Step " + i;
     $steps.append(tmpl.step({
       statement: step.statement,
-      title: title
+      title: title,
+      stepNumber: i
     }));
     $step = $steps.children().last();
     _results.push($step.find('.submit-button').on('click', {
-      number: i
+      stepNumber: i
     }, function(event) {
       var expression;
 
-      expression = $step.find('input').val();
-      return analyzeSolution(problem, event.data.number, expression);
+      expression = $("#steps [stepnumber=" + event.data.stepNumber + "]").val();
+      console.log('expression', expression);
+      return analyzeSolution(problem, event.data.stepNumber, expression);
     }));
   }
   return _results;
@@ -64,4 +65,4 @@ loadProblem = function(problemIndex) {
   });
 };
 
-loadProblem(0);
+loadProblem(1);

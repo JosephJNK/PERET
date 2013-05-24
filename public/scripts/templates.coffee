@@ -34,6 +34,6 @@ templates.add "step",
     .title #{title}
     .description #{statement}
     .input
-      input(type="text", placeholder="Enter an expression")
+      input(type="text", placeholder="Enter an expression", stepnumber="#{stepNumber}")
       a.submit-button.btn Execute
   '''
