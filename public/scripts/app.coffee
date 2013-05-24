@@ -5,6 +5,14 @@ displayProblemInput = (inputArray) ->
 
 displayResults = (results) ->
   $("#results > .content").html tmpl.executionResults results
+  if results.correct
+    $("#results > .content pre").css { 'border-width': '2px', 'border-style': 'solid', 'border-color': 'green' }
+  else
+    $("#results > .content pre").css { 'border-width': '2px', 'border-style': 'solid', 'border-color': 'red' }
+
+clearResults = ->
+  $("#results > .content").html tmpl.executionResults {hits: [], misses: [], falseHits: []}
+  $("#results > .content pre").css { 'border-width': '1px', 'border-style': 'solid', 'border-color': 'gray' }
 
 displaySteps = (problem) ->
   $steps = $ "#steps > .content"
@@ -28,6 +36,6 @@ loadProblem = (problemIndex) ->
   displayProblemText problem.steps[0].statement
   displayProblemInput problem.testValues
   displaySteps problem
-  displayResults {hits: [], misses: [], falseHits: []}
+  clearResults()
 
 loadProblem 1

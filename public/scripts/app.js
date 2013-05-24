@@ -1,4 +1,4 @@
-var analyzeSolution, displayProblemInput, displayProblemText, displayResults, displaySteps, loadProblem;
+var analyzeSolution, clearResults, displayProblemInput, displayProblemText, displayResults, displaySteps, loadProblem;
 
 displayProblemText = function(text) {
   return $("#problem-display > .content").html(text);
@@ -11,7 +11,33 @@ displayProblemInput = function(inputArray) {
 };
 
 displayResults = function(results) {
-  return $("#results > .content").html(tmpl.executionResults(results));
+  $("#results > .content").html(tmpl.executionResults(results));
+  if (results.correct) {
+    return $("#results > .content pre").css({
+      'border-width': '2px',
+      'border-style': 'solid',
+      'border-color': 'green'
+    });
+  } else {
+    return $("#results > .content pre").css({
+      'border-width': '2px',
+      'border-style': 'solid',
+      'border-color': 'red'
+    });
+  }
+};
+
+clearResults = function() {
+  $("#results > .content").html(tmpl.executionResults({
+    hits: [],
+    misses: [],
+    falseHits: []
+  }));
+  return $("#results > .content pre").css({
+    'border-width': '1px',
+    'border-style': 'solid',
+    'border-color': 'gray'
+  });
 };
 
 displaySteps = function(problem) {
@@ -58,11 +84,7 @@ loadProblem = function(problemIndex) {
   displayProblemText(problem.steps[0].statement);
   displayProblemInput(problem.testValues);
   displaySteps(problem);
-  return displayResults({
-    hits: [],
-    misses: [],
-    falseHits: []
-  });
+  return clearResults();
 };
 
 loadProblem(1);
