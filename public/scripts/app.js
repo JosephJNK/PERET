@@ -62,3 +62,5 @@ if (works) {
 } else {
   console.log('regex compilation failed v.v');
 }
+
+console.log('first problem: ', problems[0]);

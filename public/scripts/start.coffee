@@ -5,6 +5,7 @@ head.js(
   { jade: libs+'jade.js' }
   { templates: '/scripts/templates.js' }
   { lib: '/scripts/bundle.js' }
+  { problems: '/scripts/problems.js'}
 ).ready ->
   jQuery ->
     head.js app: '/scripts/app.js'

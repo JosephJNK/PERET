@@ -12,6 +12,8 @@ head.js({
   templates: '/scripts/templates.js'
 }, {
   lib: '/scripts/bundle.js'
+}, {
+  problems: '/scripts/problems.js'
 }).ready(function() {
   return jQuery(function() {
     return head.js({
