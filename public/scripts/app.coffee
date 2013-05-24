@@ -1,10 +1,10 @@
 displayProblemText = (text) -> $("#problem-display > .content").html text
 
 displayProblemInput = (inputArray) ->
-  $("#problem-input > .content").html tmpl.stringList tests: inputArray
+  $("#problem-input > .content").html tmpl.testValues testValues: inputArray
 
-displayResults = (resultArray) ->
-  $("#results > .content").html tmpl.stringList tests: resultArray
+displayResults = (results) ->
+  $("#results > .content").html tmpl.executionResults results
 
 displaySteps = (problem) ->
   $steps = $ "#steps > .content"
@@ -21,11 +21,13 @@ displaySteps = (problem) ->
 analyzeSolution = (problem, stepNumber, solutionAttempt) ->
   results = lib.checkSolution problem.testValues, solutionAttempt, problem.steps[stepNumber].solution
   console.log results
+  displayResults results
 
 loadProblem = (problemIndex) ->
   problem = lib.stepifyProblem problems[problemIndex]
   displayProblemText problem.steps[0].statement
   displayProblemInput problem.testValues
   displaySteps problem
+  displayResults {hits: [], misses: [], falseHits: []}
 
 loadProblem 0

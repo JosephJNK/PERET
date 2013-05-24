@@ -5,15 +5,13 @@ displayProblemText = function(text) {
 };
 
 displayProblemInput = function(inputArray) {
-  return $("#problem-input > .content").html(tmpl.stringList({
-    tests: inputArray
+  return $("#problem-input > .content").html(tmpl.testValues({
+    testValues: inputArray
   }));
 };
 
-displayResults = function(resultArray) {
-  return $("#results > .content").html(tmpl.stringList({
-    tests: resultArray
-  }));
+displayResults = function(results) {
+  return $("#results > .content").html(tmpl.executionResults(results));
 };
 
 displaySteps = function(problem) {
@@ -48,7 +46,8 @@ analyzeSolution = function(problem, stepNumber, solutionAttempt) {
   var results;
 
   results = lib.checkSolution(problem.testValues, solutionAttempt, problem.steps[stepNumber].solution);
-  return console.log(results);
+  console.log(results);
+  return displayResults(results);
 };
 
 loadProblem = function(problemIndex) {
@@ -57,7 +56,12 @@ loadProblem = function(problemIndex) {
   problem = lib.stepifyProblem(problems[problemIndex]);
   displayProblemText(problem.steps[0].statement);
   displayProblemInput(problem.testValues);
-  return displaySteps(problem);
+  displaySteps(problem);
+  return displayResults({
+    hits: [],
+    misses: [],
+    falseHits: []
+  });
 };
 
 loadProblem(0);
