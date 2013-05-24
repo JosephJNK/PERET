@@ -7,9 +7,4 @@ module.exports = (inputString) ->
 
   resultantForm = generate intermediateForm
 
-  {inspect} = require 'util'
-  console.log inspect intermediateForm, false, null
-
-  console.log "resultantForm: #{resultantForm}"
-
   [null, new RegExp resultantForm]

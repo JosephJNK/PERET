@@ -20,6 +20,6 @@ templates.add "step",
     .title #{title}
     .description #{statement}
     .input
-      input(type="text", placeholder="Try your best.")
-      a.submit-button.btn Enter
+      input(type="text", placeholder="Enter an expression")
+      a.submit-button.btn Execute
   '''

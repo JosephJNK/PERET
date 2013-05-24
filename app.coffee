@@ -23,3 +23,4 @@ app.get '/', (req, res) ->
     stepNumber: "5"
 
 app.listen 8000
+console.log 'listening on port 8000'

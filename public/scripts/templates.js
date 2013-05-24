@@ -11,4 +11,4 @@ templates.add = function(name, code) {
 
 templates.add("stringList", 'pre.pre-scrollable \n  - each test in tests\n    | #{test} \n    | ');
 
-templates.add("step", '.step\n  .title #{title}\n  .description #{statement}\n  .input\n    input(type="text", placeholder="Try your best.")\n    a.submit-button.btn Enter');
+templates.add("step", '.step\n  .title #{title}\n  .description #{statement}\n  .input\n    input(type="text", placeholder="Enter an expression")\n    a.submit-button.btn Execute');

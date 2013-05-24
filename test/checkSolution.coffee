@@ -2,13 +2,16 @@ should = require 'should'
 
 problem1 = require '../problems/problem1.coffee'
 checkSolution = require '../lib/checkSolution.coffee'
+stepifyProblem = require '../lib/stepifyProblem.coffee'
 
 describe 'Check Solution', ->
   it 'should return correct if a solution is correct', ->
     solutionAttempt = problem1.solution
     actualSolution = problem1.solution
 
-    results = checkSolution problem1, solutionAttempt, actualSolution
+    problem = stepifyProblem problem1
+
+    results = checkSolution problem.testValues, solutionAttempt, actualSolution
 
     results.correct.should.eql true
 
@@ -30,7 +33,9 @@ describe 'Check Solution', ->
 
     console.log 'solutionAttempt: ' + solutionAttempt
 
-    results = checkSolution problem1, solutionAttempt, actualSolution
+    problem = stepifyProblem problem1
+
+    results = checkSolution problem.testValues, solutionAttempt, actualSolution
 
     results.correct.should.eql false
     results.falseHits.length.should.eql 0

@@ -1,6 +1,6 @@
 extUnixToJs = require './extPosixToJs.coffee'
 
-module.exports = (problem, solutionAttempt, actualSolution) ->
+module.exports = (testValues, solutionAttempt, actualSolution) ->
   [error, jsSolutionAttempt] = extUnixToJs solutionAttempt
   [error, jsActualSolution] = extUnixToJs actualSolution
 
@@ -8,7 +8,7 @@ module.exports = (problem, solutionAttempt, actualSolution) ->
   falseHits = []
   misses = []
 
-  for item in problem.hits.concat problem.misses
+  for item in testValues
     shouldInclude = jsActualSolution.test item
     didInclude = jsSolutionAttempt.test item
 
